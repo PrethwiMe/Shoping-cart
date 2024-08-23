@@ -1,0 +1,56 @@
+{{>admin-header}}
+<section>
+
+    <div class="container" style="max-width: 600px; margin-top: 50px;">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center">Product Registration</h2>
+                <form action="/admin/add-products" method="post" id="productform">
+                    <div class="mb-3">
+                        <label for="product" class="form-label">Product Name</label>
+                        <input type="text" id="product" name="product" class="form-control" value="Sample Product"
+                            required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <input type="text" id="category" name="category" class="form-control" value="Electronics"
+                            required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Short Description</label>
+                        <textarea id="description" name="description" class="form-control" rows="4"
+                            required>High-quality, durable electronic device with advanced features.</textarea>
+                    </div>
+
+                    <!-- Button trigger modal -->
+                    <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Add Product
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Product Added Successfully</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <h2>Add next Product</h2>
+
+                                </div>
+                                <div class="modal-footer">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

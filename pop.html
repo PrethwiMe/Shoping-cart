@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup Example</title>
+    <style>
+        /* Basic styles for popup */
+        #popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #popup.active {
+            display: block;
+        }
+        #popup button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button id="showPopupBtn">Show Popup</button>
+
+    <div id="popup">
+        <p>This is a popup!</p>
+        <button id="closePopupBtn">Close</button>
+    </div>
+
+    <script>
+        const showPopupBtn = document.getElementById('showPopupBtn');
+        const closePopupBtn = document.getElementById('closePopupBtn');
+        const popup = document.getElementById('popup');
+
+        showPopupBtn.addEventListener('click', () => {
+            popup.classList.add('active');
+        });
+
+        closePopupBtn.addEventListener('click', () => {
+            popup.classList.remove('active');
+        });
+    </script>
+</body>
+</html>

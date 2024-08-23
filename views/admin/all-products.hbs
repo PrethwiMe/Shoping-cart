@@ -1,0 +1,42 @@
+
+{{>admin-header}}
+
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if there's a message to display
+            var message = '{{message}}';
+            if (message) {
+                alert(message); // Display pop-up message
+            }
+        });
+    </script>
+
+<section>
+    <a href="/admin/add-products" class="btn btn-success btn-lg float-end m-1">Add Product</a>
+    
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">product Name</th>
+      <th scope="col">category</th>
+      <th scope="col">price</th>
+      <th scope="col">shortDescription</th>
+      <th scope="col">image</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each allproducts}}
+    <tr>
+      <th scope="row">1</th>
+      <td>{{this.name}}</td>
+      <td>{{this.category}}</td>
+      <td>{{this.price}}</td>
+      <td>{{this.shortDescription}}</td>
+      <td>image</td>
+    </tr>
+    {{/each}}
+   
+  </tbody>
+</table>
+</section>
