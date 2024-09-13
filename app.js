@@ -4,9 +4,13 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var { create } = require('express-handlebars')
-
+var fileUpload=require('express-fileupload')
 var userRouter = require('./routes/user');
 var adminRouter = require('./routes/admin');
+var {connectDB}=require('./config/dbconnect')
+var session = require('express-session');
+
+
 
 var app = express();
 //for cookies
@@ -29,12 +33,21 @@ app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
+
+app.use(session({
+  secret: '789key', // Replace with a strong secret key
+  resave: false,
+  saveUninitialized: true,
+  cookie: { maxAge: 1000 * 60 * 10 } // 10 minutes
+}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(fileUpload())
 
+connectDB().catch(err => console.error('Failed to connect to database', err));
 app.use('/', userRouter);
 app.use('/admin', adminRouter);
 

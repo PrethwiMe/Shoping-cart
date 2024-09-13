@@ -5,20 +5,23 @@
 
   
 
-  <section>
+<section>
+  
     
     <div class="container">
       <div class="row mt-3">
-        {{#each products}}
-        <div class="col-md-4 mb-3">
-          <div class="card h-100" style="width: 19rem; background-color: antiquewhite;" >
-            <img style="width: 300px; height: 400px;" src="{{this.image}}" class="card-img-top" alt="...">
+        {{#each allProducts}}
+        <div class="col-12 col-sm-8 col-md-6 col-lg-4 mt-4" >
+          <div class="card h-100" style="width: 19rem; border: 1px solid #a5b3bd; background-color: #e6c08c; " >
+            <img style="width: 300px; height: 300px;" src="/images/{{this.image._id}}" class="card-img-top" alt="..." >
             <div class="card-body" style="">
-              <h5 class="card-title">{{this.name}}</h5>
-              <p class="card-text">{{this.shortDescription}}</p>
-              <a href="#" class="btn btn-primary">Add to Cart</a><br>
-              <h5 class="card-title mt-2">{{this.price}}</h5>
-              <h5 class="badge bg-success text-wrap">{{this.category}}</h5>
+              <h5 class="card-title">{{this.product}}</h5>
+              <p class="card-text">{{this.description}}</p>
+
+              {{!-- <a href="/go-to-cart?id={{this._id}}" class="btn btn-primary">Add to Cart</a><br> --}}
+              <button onclick="addtocart('{{this._id}}')" class="btn btn-primary" >Add to Cart</button>
+              <h5 class="card-title mt-2">{{this.Price}}</h5>
+              <h5 class="badge bg-success text-wrap">/{{this.category}}</h5>
             </div>
           </div>
         </div>
@@ -27,5 +30,3 @@
     </div>
 
    </section>
-
-   

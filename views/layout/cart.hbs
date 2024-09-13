@@ -1,0 +1,34 @@
+{{>user-header}}
+
+<section>
+
+  <div class="container my-5">
+    <h1 class="mb-4 text-center">Your Cart</h1>
+
+    <div class="row">
+      <!-- Loop through each cart item -->
+      {{#each details}}
+      <div class="col-md-12 mt-2">
+        <div class="cart-item d-flex align-items-start">
+          <img src="/images/{{this.productDetails.image._id}}" alt="{{this.productDetails.product}}" class="img-fluid">
+          <div class="cart-item-info">
+            <h2 class="h5 mb-2">{{this.productDetails.product}}</h2>
+            <p class="mb-1"><strong>Category:</strong> {{this.productDetails.category}}</p>
+            <p class="mb-1"><strong>Price:</strong> {{this.productDetails.Price}}</p>
+            <p class="mb-2"><strong>Description:</strong> {{this.productDetails.description}}</p>
+            <div class="quantity-controls">
+              <button class="btn btn-outline-secondary" type="button">-</button>
+              <span>{{this.product.quantity}}</span>
+              <button class="btn btn-outline-secondary" type="button">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    <!-- Submit Button -->
+    <div class="text-center submit-btn">
+      <button class="btn btn-primary btn-lg" type="submit">Update Cart</button>
+    </div>
+  </div>
+</section>

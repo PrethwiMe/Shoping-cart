@@ -1,15 +1,7 @@
 
 {{>admin-header}}
 
-<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if there's a message to display
-            var message = '{{message}}';
-            if (message) {
-                alert(message); // Display pop-up message
-            }
-        });
-    </script>
+
 
 <section>
     <a href="/admin/add-products" class="btn btn-success btn-lg float-end m-1">Add Product</a>
@@ -26,17 +18,22 @@
     </tr>
   </thead>
   <tbody>
-    {{#each allproducts}}
-    <tr>
-      <th scope="row">1</th>
-      <td>{{this.name}}</td>
-      <td>{{this.category}}</td>
-      <td>{{this.price}}</td>
-      <td>{{this.shortDescription}}</td>
-      <td>image</td>
-    </tr>
-    {{/each}}
-   
+    {{#each allProducts}}
+<tr>
+  <th scope="row">{{@index}}</th>
+  <td>{{this.product}}</td>
+  <td>{{this.category}}</td>
+  <td>{{this.Price}}</td>
+  <td>{{this.description}}</td>
+  <td><img src="/images/{{this.image._id}}" alt="Image failed to load" style="width: 100px;"></td>
+  <td><a href="/admin/edit-products?id={{this._id}}" class="btn btn-success">Modify</a></td>
+  <td><a href="/admin/delete-product?id={{this._id}}" class="btn btn-danger" onclick="return confirm('Are you wanted to delete {{this.name}}?')">Delete</a></td>
+
+</tr>
+{{/each}}
+
   </tbody>
 </table>
 </section>
+
+

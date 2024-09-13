@@ -1,0 +1,27 @@
+.navbar-brand {
+    font-size: 1.5rem; /* Adjust size as needed */
+    font-weight: bold;
+    text-decoration: none;
+    color: #ffffff; /* Default text color for the rest */
+}
+
+.nav-lin {
+    font-size: 1rem; /* Corrected size */
+    font-weight: bold;
+    text-decoration: none;
+    color: #ffffff; /* Default text color for the rest */
+    margin-left: 20px;
+}
+
+/* Styling for the highlighted "P" */
+.highlight {
+    color: #f0ad4e; /* Light color for visibility on dark background */
+    font-size: 2.5rem; /* Larger size for emphasis */
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Subtle shadow for better contrast */
+}
+
+/* Example of navbar-dark bg-dark styling for context */
+.navbar-dark.bg-dark {
+    background-color: #343a40; /* Dark background color */
+}

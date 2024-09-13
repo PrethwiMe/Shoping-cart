@@ -1,0 +1,112 @@
+<header>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <span class="highlight">P</span>-cart-user
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar"
+                    aria-controls="mynavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Dropdown button -->
+                <div class="dropdown ms-3">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Sign In/Up
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="/signup">Sign Up</a></li>
+                        <li><a class="dropdown-item" href="/login">Sign In</a></li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+</header>
+
+<section>
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="w-100" style="max-width: 400px;">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-body p-4">
+                    <h4 class="card-title text-center mb-4">Sign Up</h4>
+                    <form id="signup-form" action="/signup" method="post">
+                    <div class="form-group mb-3">
+                            <label for="email" class="form-label">Name</label>
+                            <input type="text" id="name" name="name" class="form-control"
+                                placeholder="Enter your Name" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="mail" name="email" class="form-control"
+                                placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" id="pword" name="password" class="form-control"
+                                placeholder="Enter your password" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="confirm-password" class="form-label">Confirm Password</label>
+                            <input type="password" id="confirm-pword" class="form-control"
+                                placeholder="Confirm your password" required>
+                            <small id="password-error" class="form-text text-danger"></small>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2">Sign Up</button>
+                        <div class="text-center mt-3">
+                            <p class="text-muted">Already have an account? <a href="/login" class="link-primary">Login
+                                    here</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.getElementById('signup-form').addEventListener('submit', async function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        var password = document.getElementById('pword').value;
+        var confirmPassword = document.getElementById('confirm-pword').value;
+        var errorElement = document.getElementById('password-error');
+
+        if (password !== confirmPassword) {
+            errorElement.textContent = 'Passwords do not match.';
+            return; // Stop further processing
+        }
+
+        errorElement.textContent = ''; // Clear error message
+
+        // Prepare form data
+        var formData = new FormData(this);
+
+        try {
+            // Send form data to the server
+            const response = await fetch('/signup', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Handle success (e.g., redirect or display a success message)
+                alert(result.message); // Display success message
+                window.location.href = '/login'; // Redirect to login page
+            } else {
+                // Handle error (e.g., display an error message)
+                alert(result.message); // Show error message
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An unexpected error occurred. Please try again.');
+        }
+    });
+</script>

@@ -1,56 +1,90 @@
-{{>admin-header}}
-<section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('productform');
+            const submitButton = form.querySelector('button[type="submit"]');
+            
+            function checkFormValidity() {
+                // Check if all fields are filled
+                const isValid = form.checkValidity();
+                // Enable or disable the submit button based on form validity
+                submitButton.disabled = !isValid;
+            }
+            
+            // Add event listeners to all form fields
+            form.addEventListener('input', checkFormValidity);
+            form.addEventListener('change', checkFormValidity);
+            
+            // Initial check
+            checkFormValidity();
+        });
+    </script>
+</head>
+<body>
+    {{>admin-header}}
+    <section>
+        <div class="container" style="max-width: 600px; margin-top: 50px;">
+            <div class="card shadow p-3 mb-5 bg-body rounded">
+                <div class="card-body border border-5">
+                    <h2 class="card-title text-center">Product Registration</h2>
+                    <form action="/admin/add-products" method="post" id="productform" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="product" class="form-label">Product Name</label>
+                            <input type="text" id="product" name="product" class="form-control" required>
+                        </div>
 
-    <div class="container" style="max-width: 600px; margin-top: 50px;">
-        <div class="card">
-            <div class="card-body">
-                <h2 class="card-title text-center">Product Registration</h2>
-                <form action="/admin/add-products" method="post" id="productform">
-                    <div class="mb-3">
-                        <label for="product" class="form-label">Product Name</label>
-                        <input type="text" id="product" name="product" class="form-control" value="Sample Product"
-                            required>
-                    </div>
+                        <div class="mb-3">
+                            <label for="Price" class="form-label">Price</label>
+                            <input type="text" id="category" name="Price" class="form-control"  required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="Category" class="form-label">Category</label>
+                            <input type="text" id="Category" name="category" class="form-control"  required>
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="category" class="form-label">Category</label>
-                        <input type="text" id="category" name="category" class="form-control" value="Electronics"
-                            required>
-                    </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Short Description</label>
+                            <textarea id="description" name="description" class="form-control" rows="4" ></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label mx-auto">Product Image</label>
+                            <input type="file" id="image" name="image" class="form-control" accept="image/*" required>
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Short Description</label>
-                        <textarea id="description" name="description" class="form-control" rows="4"
-                            required>High-quality, durable electronic device with advanced features.</textarea>
-                    </div>
+                        <!-- Button trigger modal -->
+                        <div class="d-grid gap-2 col-6 mx-auto">
+                            <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>
+                                Add Product
+                            </button>
+                        </div>
 
-                    <!-- Button trigger modal -->
-                    <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        Add Product
-                    </button>
-
-                    <!-- Modal -->
-                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Product Added Successfully</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <h2>Add next Product</h2>
-
-                                </div>
-                                <div class="modal-footer">
-
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Product Added Successfully</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h2>Add next Product</h2>
+                                    </div>
+                                    <div class="modal-footer">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</body>
+</html>

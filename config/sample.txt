@@ -1,0 +1,52 @@
+router.post("/add-products", async (req, res) => {
+  // Retrieve the uploaded image, if present
+  const image = req.files ? req.files.image : null;
+
+  if (image) {
+    // Define the path to save the uploaded file
+    const uploadPath = path.join(__dirname, '../uploads', image.name);
+
+    // Move the uploaded file to the specified path
+    image.mv(uploadPath, async (err) => {
+      if (err) {
+        return res.status(500).send('Failed to upload image: ' + err.message);
+      }
+
+      // Prepare file metadata for MongoDB
+      const fileMetadata = {
+        name: image.name,
+        mimetype: image.mimetype,
+        size: image.size,
+        path: uploadPath
+      };
+
+      // Combine file metadata with other form data
+      const productData = {
+        ...req.body,
+        image: fileMetadata
+      };
+
+      // Insert combined data into MongoDB
+      try {
+        await dataInsert(productData);
+        res.redirect("/admin/add-products");
+      } catch (error) {
+        res.status(500).send('Error inserting data: ' + error.message);
+      }
+    });
+  } else {
+    // Handle cases where no image is uploaded
+    const productData = {
+      ...req.body,
+      image: null
+    };
+
+    // Insert data into MongoDB without image
+    try {
+      await dataInsert(productData);
+      res.redirect("/admin/add-products");
+    } catch (error) {
+      res.status(500).send('Error inserting data: ' + error.message);
+    }
+  }
+});

@@ -1,0 +1,68 @@
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <header>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <span class="highlight">P</span>-cart-user
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar" aria-controls="mynavbar" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="mynavbar">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-lin" href="javascript:void(0)">Product</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-lin" href="javascript:void(0)">Services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-lin" href="javascript:void(0)">Cart</a>
+            </li>
+          </ul>
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-primary" type="submit">Search</button>
+          </form>
+          <!-- Dropdown button -->
+          <div class="dropdown ms-3">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+              Sign In/Up
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li><a class="dropdown-item" href="/signup" >signup</a></li>
+              <li><a class="dropdown-item" href="/login">SignIn</a></li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <section>
+  
+    
+    <div class="container">
+      <div class="row mt-3">
+        {{#each allProducts}}
+        <div class="col-12 col-sm-8 col-md-6 col-lg-4 mt-4" >
+          <div class="card h-100" style="width: 19rem; border: 1px solid #a5b3bd; background-color: #e6c08c; " >
+            <img style="width: 300px; height: 300px;" src="/images/{{this.image.name}}" class="card-img-top" alt="..." >
+            <div class="card-body" style="">
+              <h5 class="card-title">{{this.product}}</h5>
+              <p class="card-text">{{this.description}}</p>
+              <a href="#" class="btn btn-primary">Add to Cart</a><br>
+              <h5 class="card-title mt-2">{{this.Price}}</h5>
+              <h5 class="badge bg-success text-wrap">/{{this.category}}</h5>
+            </div>
+          </div>
+        </div>
+         {{/each}}
+      </div>
+    </div>
+
+   </section>
+
