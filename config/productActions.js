@@ -1,7 +1,7 @@
 var express = require("express")
 var { getDb } = require('./dbconnect')
 const path = require('path');
-const { log } = require("console");
+const { log, count } = require("console");
 const { ObjectId } = require("mongodb");
 const { stringify } = require("querystring");
 const productCollection = "allProducts"
@@ -85,9 +85,9 @@ async function addToCart(idUser, idProduct) {
         const productId = new ObjectId(idProduct);
         const db = getDb();
 
-        const productobj={
-            item:productId,
-            quantity:1
+        const productobj = {
+            item: productId,
+            quantity: 1
         }
 
         // Find the user's cart
@@ -100,11 +100,11 @@ async function addToCart(idUser, idProduct) {
             if (productInCart) {
                 // console.log("Product is already in the cart.");
                 await db.collection(cart).updateOne(
-                    {user:userId,"product.item":productId},
-                    {$inc: {"product.$.quantity":1}} 
-                 )
-                 console.log("incremented");
-                 
+                    { user: userId, "product.item": productId },
+                    { $inc: { "product.$.quantity": 1 } }
+                )
+
+
 
             } else {
                 // Add product to the existing cart
@@ -112,9 +112,8 @@ async function addToCart(idUser, idProduct) {
                     { user: userId },
                     { $push: { product: productobj } }
                 );
-                console.log("Product added to cart.");
 
-                
+
             }
         } else {
             // Create a new cart and add the product
@@ -124,7 +123,6 @@ async function addToCart(idUser, idProduct) {
             };
 
             await db.collection(cart).insertOne(newCart);
-            console.log("New cart created and product added.");
         }
     } catch (error) {
         console.error("An error occurred:", error);
@@ -143,9 +141,6 @@ async function viewCart(IdOfUser) {
         throw new Error('Invalid cart ID');
     }
 
-
-    console.log('User ID:', userId);
-
     const pipeline = [
         { $match: { user: userId } },    // Match documents in 'cart' collection for the given user ID
         { $unwind: '$product' },         // Unwind the 'product' field (assuming it's an array; otherwise, skip this)
@@ -160,7 +155,7 @@ async function viewCart(IdOfUser) {
         { $unwind: '$productDetails' },   // Unwind the 'productDetails' array to get individual product documents
         {
             $project: {
-                _id: 0,
+                _id: 1,
                 user: 1,
                 'productDetails._id': 1,  // Include product ID
                 'productDetails.product': 1, // Include product name
@@ -168,22 +163,13 @@ async function viewCart(IdOfUser) {
                 'productDetails.Price': 1, // Include product price
                 'productDetails.description': 1, // Include product description
                 'productDetails.image': 1, // Include product image metadata
-                'product.item':1,
-                'product.quantity':1
+                'product.item': 1,
+                'product.quantity': 1
             }
         }
     ];
 
-
-
     const documents = await cartColletion.aggregate(pipeline).toArray();
-    // console.log('Aggregation Results:', documents);
-    // console.log(documents);
-    
-    // console.log('working object');
-    
-    
-
     return documents;
 }
 //count to cart
@@ -191,19 +177,66 @@ async function countItems(userId) {
     const user = new ObjectId(userId)
     const db = getDb();
     const cartColletion = await db.collection(cart).findOne({ user: user })
-    console.log(cartColletion);
-    
-    if(cartColletion===null ){
-        
+    if (cartColletion === null) {
+
         console.log("empty cart");
         return 0
-        
-    }else{
+
+    } else {
         const len = cartColletion.product
         const number = len.length
         return number
     }
-
-   
 }
-module.exports = { dataInsert, viewProducts, deleteProduct, viewOneProduct, updateProduct, addToCart, viewCart, countItems }
+async function removeProductFromCart(cId,pId) {
+   
+     const cartId = new ObjectId(cId)
+     const productId = new ObjectId(pId)
+     const db=await getDb();
+     const cartCollection=await db.collection('cart').updateOne(
+         { _id:cartId},
+         { $pull: { product: { item: productId } } } 
+     )
+
+     return cartCollection;
+      
+ }
+// change quantity
+async function changeQuantity(req) {
+    const cartId = new ObjectId(req.cartId)
+    const productId = new ObjectId(req.productId)
+    const count = parseInt(req.count)
+    const db = await getDb();
+
+    const cart = await db.collection('cart').findOne({ _id: cartId });//checking cart
+    
+    const chkproduct = cart.product.find(itemobj => itemobj.item.equals(productId));//finding product
+    
+        if (chkproduct) {
+            const currentQuantity = (await db.collection('cart').findOne({ _id: cartId, "product.item": productId }, { projection: { "product.$": 1 } })).product[0].quantity;
+            
+            if (currentQuantity===1) {
+                console.log(currentQuantity);
+            
+        await removeProductFromCart(cartId,productId);
+    console.log("product removed",currentQuantity);
+            
+        }else{
+            const cartCollection = await db.collection('cart').updateOne({ _id: cartId, "product.item": productId },
+                {
+                    $inc: { "product.$.quantity": count }
+                }
+            )
+            
+        
+         const newQuantity = (await db.collection('cart').findOne({ _id: cartId, "product.item": productId }, { projection: { "product.$": 1 } })).product[0].quantity;
+        return newQuantity;
+        }  
+    }else{
+        console.log("else lasr block");
+    }
+}
+
+
+
+module.exports = { dataInsert, viewProducts, deleteProduct, viewOneProduct, updateProduct, addToCart, viewCart, countItems, changeQuantity,removeProductFromCart }

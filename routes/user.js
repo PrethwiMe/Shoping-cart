@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var path = require("path")
-var { viewProducts, addToCart, viewCart,countItems } = require("../config/productActions");
+var { viewProducts, addToCart, viewCart,countItems, changeQuantity, removeProductFromCart } = require("../config/productActions");
 const { addUser } = require('../config/userHandle/signupUser');
 const { loginUser } = require('../config/userHandle/userLogin');
 
-
+router.use(express.urlencoded({ extended: true }));
 
 //session login
 const verifylogin=(req,res,next)=>{
@@ -22,7 +22,8 @@ router.get('/', async (req, res) => {
 
       if (sessiondata) {
           numberOfItems = await countItems(req.session.user._id);
-          console.log("Number of items:", numberOfItems);
+          
+          
       } else {
           console.log("Session data is null");
       }
@@ -108,7 +109,8 @@ router.get('/cart',verifylogin,async (req,res) => {
   let sessiondata=req.session.user
   const details=await viewCart(userId)
   res.render('layout/cart',{details,sessiondata})
-
+  
+  
 })
 
 //add to cart products
@@ -117,7 +119,25 @@ router.get('/go-to-cart',verifylogin,async(req,res)=>{
   const result=await addToCart(req.session.user._id,req.query.id,req.session.user.name)
   console.log(result);
   res.json({status:true})
-  //res.redirect('/') 
+})
+
+//qunatity change
+
+router.post('/change-quantity',async(req,res)=>{
+  
+  const { cartId, productId, count } = req.body;
+ const result=await changeQuantity(req.body)
+ res.json({count:result})
+   
+})
+router.get("/remove-item",async (req,res)=>{
+  console.log(req.query.id);
+  const cartId=req.query.id
+  const productId=req.query.product
+  
+  
+const result=  await removeProductFromCart(cartId,productId)
+  res.json({status:true})
 })
 
 

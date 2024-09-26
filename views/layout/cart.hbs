@@ -9,21 +9,28 @@
       <!-- Loop through each cart item -->
       {{#each details}}
       <div class="col-md-12 mt-2">
-        <div class="cart-item d-flex align-items-start">
-          <img src="/images/{{this.productDetails.image._id}}" alt="{{this.productDetails.product}}" class="img-fluid">
-          <div class="cart-item-info">
-            <h2 class="h5 mb-2">{{this.productDetails.product}}</h2>
-            <p class="mb-1"><strong>Category:</strong> {{this.productDetails.category}}</p>
-            <p class="mb-1"><strong>Price:</strong> {{this.productDetails.Price}}</p>
-            <p class="mb-2"><strong>Description:</strong> {{this.productDetails.description}}</p>
-            <div class="quantity-controls">
-              <button class="btn btn-outline-secondary" type="button">-</button>
-              <span>{{this.product.quantity}}</span>
-              <button class="btn btn-outline-secondary" type="button">+</button>
-            </div>
-          </div>
-        </div>
+  <div class="cart-item d-flex align-items-start">
+    <img src="/images/{{this.productDetails.image._id}}" alt="{{this.productDetails.product}}" class="img-fluid">
+    <div class="cart-item-info flex-grow-1"> <!-- Ensure it takes available space -->
+      <h2 class="h5 mb-2">{{this.productDetails.product}}</h2>
+      <p class="mb-1"><strong>Category:</strong> {{this.productDetails.category}}</p>
+      <p class="mb-1"><strong>Price:</strong> {{this.productDetails.Price}}</p>
+      <p class="mb-2"><strong>Description:</strong> {{this.productDetails.description}}</p>
+      <div class="quantity-controls">
+        <button class="btn btn-outline-secondary" type="button" onclick="changeNum('{{this._id}}','{{this.productDetails._id}}',-1)">-</button>
+        <span id="quantity-{{this.productDetails._id}}">{{this.product.quantity}}</span>
+        <button class="btn btn-outline-secondary" type="button" onclick="changeNum('{{this._id}}','{{this.productDetails._id}}',1)">+</button>
       </div>
+    </div>
+
+    <!-- Remove button aligned to the right -->
+    <div class="ml-auto"> <!-- or float-end -->
+      <a href="#" class="btn btn-danger" type="button" onclick=" removeItem('{{this._id}}','{{this.productDetails._id}}')">Remove</a>
+  
+    </div>
+  </div>
+</div>
+
       {{/each}}
     </div>
     <!-- Submit Button -->
@@ -32,3 +39,8 @@
     </div>
   </div>
 </section>
+<script src="/javascripts/cartQuntity.js"></script>
+<script>
+ 
+
+</script>
