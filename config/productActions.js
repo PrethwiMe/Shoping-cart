@@ -4,6 +4,7 @@ const path = require('path');
 const { log, count } = require("console");
 const { ObjectId } = require("mongodb");
 const { stringify } = require("querystring");
+const { pipeline } = require("stream");
 const productCollection = "allProducts"
 const cart = "cart"
 
@@ -23,8 +24,10 @@ async function dataInsert(data) {
 async function viewProducts() {
     try {
         const db = getDb();
-        const collection = db.collection(productCollection);
+        const collection = db.collection("allProducts");
         const docs = await collection.find({}).toArray();
+        
+        
         return docs;
     } catch (error) {
         console.error("Error fetching products:", error); // Log error details
@@ -170,6 +173,7 @@ async function viewCart(IdOfUser) {
     ];
 
     const documents = await cartColletion.aggregate(pipeline).toArray();
+
     return documents;
 }
 //count to cart
@@ -188,55 +192,220 @@ async function countItems(userId) {
         return number
     }
 }
-async function removeProductFromCart(cId,pId) {
-   
-     const cartId = new ObjectId(cId)
-     const productId = new ObjectId(pId)
-     const db=await getDb();
-     const cartCollection=await db.collection('cart').updateOne(
-         { _id:cartId},
-         { $pull: { product: { item: productId } } } 
-     )
+async function removeProductFromCart(cId, pId) {
 
-     return cartCollection;
-      
- }
+    const cartId = new ObjectId(cId)
+    const productId = new ObjectId(pId)
+    const db = await getDb();
+    const cartCollection = await db.collection('cart').updateOne(
+        { _id: cartId },
+        { $pull: { product: { item: productId } } }
+    )
+
+    return cartCollection;
+
+}
 // change quantity
 async function changeQuantity(req) {
     const cartId = new ObjectId(req.cartId)
     const productId = new ObjectId(req.productId)
     const count = parseInt(req.count)
+    console.log("count", count);
+
     const db = await getDb();
 
     const cart = await db.collection('cart').findOne({ _id: cartId });//checking cart
-    
+
     const chkproduct = cart.product.find(itemobj => itemobj.item.equals(productId));//finding product
-    
-        if (chkproduct) {
-            const currentQuantity = (await db.collection('cart').findOne({ _id: cartId, "product.item": productId }, { projection: { "product.$": 1 } })).product[0].quantity;
+
+    if (chkproduct) {
+        const currentQuantity = (await db.collection('cart').findOne({ _id: cartId, "product.item": productId }, { projection: { "product.$": 1 } })).product[0].quantity;
+
+        if (currentQuantity === 1 && count === -1) {
             
-            if (currentQuantity===1) {
-                console.log(currentQuantity);
-            
-        await removeProductFromCart(cartId,productId);
-    console.log("product removed",currentQuantity);
-            
-        }else{
+
+            await removeProductFromCart(cartId, productId);
+            console.log("product removed", currentQuantity);
+
+        } else {
             const cartCollection = await db.collection('cart').updateOne({ _id: cartId, "product.item": productId },
                 {
                     $inc: { "product.$.quantity": count }
                 }
             )
-            
-        
-         const newQuantity = (await db.collection('cart').findOne({ _id: cartId, "product.item": productId }, { projection: { "product.$": 1 } })).product[0].quantity;
-        return newQuantity;
-        }  
-    }else{
+
+
+            const newQuantity = (await db.collection('cart').findOne({ _id: cartId, "product.item": productId }, { projection: { "product.$": 1 } })).product[0].quantity;
+            return newQuantity;
+        }
+    } else {
         console.log("else lasr block");
     }
+}
+//total ammount
+async function total(userId) {
+   
+
+    userId = new ObjectId(userId)
+
+    const db = getDb();
+    const collectionForTotal = db.collection(cart)
+
+    const pipeline = [
+        { $match: { user: userId } },
+        { $unwind: '$product' },
+        {
+            $lookup: {
+                from: 'allProducts',
+                localField: 'product.item',
+                foreignField: '_id',
+                as: 'productDetails'
+            }
+        },
+        { $unwind: '$productDetails' },
+        {
+            $project: {
+                _id: 1,
+                user: 1,
+                'productDetails._id': 1,  // Include product ID
+                'productDetails.product': 1, // Include product name
+                'productDetails.category': 1, // Include product category
+                'productDetails.Price': {
+                    $toDouble: { $ifNull: ['$productDetails.Price', 0] }  // Convert Price to double, default to 0 if null
+                },
+                'productDetails.description': 1, // Include product description
+                'productDetails.image': 1, // Include product image metadata
+                'product.item': 1,
+                'product.quantity': {
+                    $toInt: { $ifNull: ['$product.quantity', 0] }  // Convert quantity to int, default to 0 if null
+                }
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                total: {
+                    $sum: {
+                        $multiply: ['$product.quantity', '$productDetails.Price']
+                    }
+                }
+            }
+        }
+
+    ]
+    const totalamount = await collectionForTotal.aggregate(pipeline).toArray();
+    if (!totalamount.length) {
+        
+
+        return 0
+    } else {
+       
+
+        return totalamount[0].total
+    }
+}
+
+//fetch cart for order
+
+async function getCart(userId) { 
+    const db=await getDb();
+    const cartOrder=await db.collection(cart).findOne({user:new ObjectId(userId)})
+    return cartOrder
+}
+
+async function placeOrder(cartForOrder,userDetails,amt) {
+    const status=userDetails.paymentMethod==='cod'?'placed':'pending'
+    
+    const orderObj={
+        userId:cartForOrder.user,
+        products:cartForOrder.product,
+    fullName:userDetails.fullName,
+    phone:userDetails.phone,
+    address:userDetails.address,
+    city:userDetails.city,
+    postalCode:userDetails.postalCode,
+    status:status,
+    totalamount:amt
+}
+    const db=getDb();
+    const orderCollection=await db.collection('Order').insertOne(orderObj)
+
+   const deleteCart=await db.collection(cart).deleteOne({user:new ObjectId(cartForOrder.user)})
+
+    return true
+}
+
+async function viewMyOrders(userId) {
+  const user=new ObjectId(userId);
+    console.log(userId);
+    
+
+    const db=getDb();
+
+    const orderCollection=await db.collection('Order')//.find({userId:user}).toArray();
+    
+    
+    
+    const pipeline = [
+        { $match: { userId: user } },    // Match orders by the given userId
+        { $unwind: '$products' },         // Unwind the 'products' array to access each product in the order
+        {
+          $lookup: {
+            from: 'allProducts',           // Lookup from the 'allProducts' collection
+            localField: 'products.item',   // Match on the 'products.item' field (ObjectId of the product)
+            foreignField: '_id',           // Join with the '_id' field in 'allProducts'
+            as: 'OrderDetails'             // Alias for the joined product details
+          }
+        },
+        { $unwind: '$OrderDetails' },     // Unwind the 'OrderDetails' array to get individual product details
+        {
+          $project: {
+            _id: 1,                       // Include order ID
+            fullName: 1,                  // Include customer name
+            phone: 1,                     // Include phone number
+            address: 1,                   // Include address
+            city: 1,                      // Include city
+            postalCode: 1,                // Include postal code
+            status: 1,                    // Include order status
+            totalamount: 1,               // Include total amount
+            'OrderDetails.product': 1,    // Include product name from 'allProducts'
+            'OrderDetails.category': 1,   // Include product category from 'allProducts'
+            'OrderDetails.Price': 1,      // Include product price from 'allProducts'
+            'OrderDetails.image': 1,      // Include product image from 'allProducts'
+            'products.quantity': 1        // Include product quantity from 'Order'
+          }
+        },
+        {
+          $group: {
+            _id: '$_id',                  // Group by order ID
+            fullName: { $first: '$fullName' },
+            phone: { $first: '$phone' },
+            address: { $first: '$address' },
+            city: { $first: '$city' },
+            postalCode: { $first: '$postalCode' },
+            status: { $first: '$status' },
+            totalamount: { $first: '$totalamount' },
+            products: { $push: {
+                product: '$OrderDetails.product',
+                category: '$OrderDetails.category',
+                price: '$OrderDetails.Price',
+                image: '$OrderDetails.image',
+                quantity: '$products.quantity'
+              }
+            } // Collect all products in an array
+          }
+        }
+      ];
+
+  const result = await orderCollection.aggregate(pipeline).toArray();
+  
+
+    return result
+    
+    
 }
 
 
 
-module.exports = { dataInsert, viewProducts, deleteProduct, viewOneProduct, updateProduct, addToCart, viewCart, countItems, changeQuantity,removeProductFromCart }
+module.exports = { dataInsert, viewProducts, deleteProduct, viewOneProduct, updateProduct, addToCart, viewCart,
+     countItems, changeQuantity, removeProductFromCart, total,getCart,placeOrder,viewMyOrders }

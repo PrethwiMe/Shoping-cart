@@ -14,7 +14,7 @@
       <div class="collapse navbar-collapse" id="mynavbar">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-lin" href="javascript:void(0)">Product</a>
+            <a class="nav-lin" href="/myOrders">My Orders</a>
           </li>
           <li class="nav-item">
             <a class="nav-lin" href="javascript:void(0)">Services</a>
@@ -56,3 +56,10 @@
     </div>
   </nav>
 </header>
+<script>
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+      window.location.reload(); // Force reload the page
+    }
+  });
+</script>

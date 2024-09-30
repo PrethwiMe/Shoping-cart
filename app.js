@@ -33,6 +33,7 @@ app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
+connectDB().catch(err => console.error('Failed to connect to database', err));
 
 app.use(session({
   secret: '789key', // Replace with a strong secret key
@@ -47,7 +48,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload())
 
-connectDB().catch(err => console.error('Failed to connect to database', err));
+
 app.use('/', userRouter);
 app.use('/admin', adminRouter);
 

@@ -21,20 +21,32 @@ function changeNum(cartId, productId, count) {
   }
 
   function removeItem(cartId, productId) {
-    const isconfirm=confirm("Are you sure you want to remove this item from the cart?");
+    const isconfirm = confirm("Are you sure you want to remove this item from the cart?");
     if (isconfirm) {
-      $.ajax({
-        url: '/remove-item', // The server endpoint that removes the item
-        type: 'GET', 
-        data: { id: cartId, product: productId }, // Pass cartId and productId
-        success: function (response) {
-          // Refresh the page after the item is removed
-          location.reload();
-        },
-        error: function () {
-          alert("Error removing item");
-        }
-      });
+        // Save the current scroll position before reload
+        sessionStorage.setItem('scrollPosition', window.scrollY);
+
+        $.ajax({
+            url: '/remove-item',
+            type: 'GET',
+            data: { id: cartId, product: productId },
+            success: function (response) {
+                // Reload the page after the item is removed
+                location.reload();
+            },
+            error: function () {
+                alert("Error removing item");
+            }
+        });
     }
-    
-  }
+}
+
+// Restore the scroll position after the page reloads
+$(document).ready(function () {
+    const scrollPosition = sessionStorage.getItem('scrollPosition');
+    if (scrollPosition !== null) {
+        window.scrollTo(0, parseInt(scrollPosition));
+        sessionStorage.removeItem('scrollPosition'); // Clean up after restoration
+    }
+});
+
