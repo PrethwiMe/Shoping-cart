@@ -5,9 +5,16 @@ const { log, count } = require("console");
 const { ObjectId } = require("mongodb");
 const { stringify } = require("querystring");
 const { pipeline } = require("stream");
+const Razorpay = require("razorpay");
+const { rejects } = require("assert");
 const productCollection = "allProducts"
 const cart = "cart"
 
+
+var instance = new Razorpay({
+    key_id: 'rzp_test_sNKny4TYn0ZBL4',
+    key_secret: 'Gp2XdJiQXWIa1HEyyHyh8kKA',
+  });
 async function dataInsert(data) {
 
     try {
@@ -314,7 +321,9 @@ async function getCart(userId) {
 }
 
 async function placeOrder(cartForOrder,userDetails,amt) {
-    const status=userDetails.paymentMethod==='cod'?'placed':'pending'
+   
+    
+    const status=userDetails.paymentMethod==='cod-placed'?'Cod-Placed':'pending'
     
     const orderObj={
         userId:cartForOrder.user,
@@ -332,19 +341,13 @@ async function placeOrder(cartForOrder,userDetails,amt) {
 
    const deleteCart=await db.collection(cart).deleteOne({user:new ObjectId(cartForOrder.user)})
 
-    return true
+    return orderCollection
 }
 
 async function viewMyOrders(userId) {
   const user=new ObjectId(userId);
-    console.log(userId);
-    
-
     const db=getDb();
-
     const orderCollection=await db.collection('Order')//.find({userId:user}).toArray();
-    
-    
     
     const pipeline = [
         { $match: { userId: user } },    // Match orders by the given userId
@@ -399,13 +402,46 @@ async function viewMyOrders(userId) {
 
   const result = await orderCollection.aggregate(pipeline).toArray();
   
-
     return result
-    
-    
+}
+async function payOnlineApi(orderId,amt,userDetails){
+    return new Promise((resolve,reject)=>{
+        var options = {
+            amount: amt,  // amount in the smallest currency unit
+            currency: "INR",
+            receipt: orderId
+          };
+          instance.orders.create(options, function(err, order) {
+            if (err) {
+              console.log(err);
+              
+            }else if(order){
+              
+              resolve(order)
+          }
+          });
+    })
+
+}
+
+ function updateOrderStatus(orderId, status) {
+  
+  return new Promise(async (resolve, reject) => {
+    try {
+      const db = await getDb();
+      const orderCollection = await db.collection("Order").updateOne(
+        { _id: new ObjectId(orderId) }, // You can add more conditions if needed
+        { $set: { status: status } }
+      );
+      
+      resolve(orderCollection);
+    } catch (err) {
+      reject(err);
+    }
+  });
 }
 
 
 
 module.exports = { dataInsert, viewProducts, deleteProduct, viewOneProduct, updateProduct, addToCart, viewCart,
-     countItems, changeQuantity, removeProductFromCart, total,getCart,placeOrder,viewMyOrders }
+     countItems, changeQuantity, removeProductFromCart, total,getCart,placeOrder,viewMyOrders,payOnlineApi,updateOrderStatus}

@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var path = require("path")
-var { viewProducts, addToCart, viewCart,countItems, changeQuantity, removeProductFromCart, total, getCart, placeOrder, viewMyOrders } = require("../config/productActions");
+var { viewProducts, addToCart, viewCart,countItems, changeQuantity, removeProductFromCart, total,
+   getCart, placeOrder, viewMyOrders, payOnlineApi,updateOrderStatus } = require("../config/productActions");
 const { addUser } = require('../config/userHandle/signupUser');
 const { loginUser } = require('../config/userHandle/userLogin');
 const session = require('express-session');
@@ -163,23 +164,68 @@ router.post("/submit-order",verifylogin,async(req,res)=>{
 
   const userId=req.body.userId
   const userDetails=req.body
-  //userDetails have userID
+  
   const amt=await total(userId)
  const cartForOrder= await getCart(userId)
-const orderplaceApi=await placeOrder(cartForOrder,userDetails,amt);
-console.log("oder place");
-
- res.redirect("/place-Order")
+console.log('userDetails.paymentMethod',userDetails.paymentMethod);
+const codOrderplaceApi=await placeOrder(cartForOrder,userDetails,amt);
+const orderId=codOrderplaceApi.insertedId.toString()
+req.session.orderId=orderId;
+if (userDetails.paymentMethod==='cod-placed') {
+   res.json({status:true})
+  
+}else if (userDetails.paymentMethod==='onlinePayment') {
+try {
+  const result=await payOnlineApi(orderId,amt,userDetails)
+    res.json({ status: result });
+} catch (error) {
+ console.log("result not printed");
+  
+} 
+}
 })
 
 router.get('/myOrders',verifylogin,async (req,res) => {
 
   const result=await viewMyOrders(req.session.user._id)
-  console.log("userId",req.session.user._id);
     
   res.render("layout/myOrders",{result})
   
 })
+
+router.post('/payment-success',verifylogin,async (req, res) => {
+  const { order_id, payment_id, signature, amount } = req.body;
+  if (signature) {
+   
+    const crypto = require('crypto');
+  
+    const generated_signature = crypto
+    .createHmac('sha256', 'Gp2XdJiQXWIa1HEyyHyh8kKA') 
+    .update(`${order_id}|${payment_id}`)
+    .digest('hex');
+  if (generated_signature === signature) {
+  console.log("verified");
+const userId=req.session.user._id
+const status='placed'
+const orderId=req.session.orderId
+const response= await updateOrderStatus(orderId,status)
+res.json({status:response})
+
+  
+  
+   }else{
+    console.log("not Verified");
+    
+   }
+  }
+  else{
+
+res.status(400).json({ status: 'failed', message: 'Payment verification failed.' });
+  }
+ 
+
+  
+});
 
 
 
