@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var path = require("path")
 var { viewProducts, addToCart, viewCart,countItems, changeQuantity, removeProductFromCart, total,
-   getCart, placeOrder, viewMyOrders, payOnlineApi,updateOrderStatus } = require("../config/productActions");
+   getCart, placeOrder, viewMyOrders, payOnlineApi,updateOrderStatus,cancelOrder } = require("../config/productActions");
 const { addUser } = require('../config/userHandle/signupUser');
 const { loginUser } = require('../config/userHandle/userLogin');
 const session = require('express-session');
@@ -186,10 +186,9 @@ try {
 })
 
 router.get('/myOrders',verifylogin,async (req,res) => {
-
   const result=await viewMyOrders(req.session.user._id)
-    
-  res.render("layout/myOrders",{result})
+  let sessiondata = req.session.user;
+  res.render("layout/myOrders",{result,sessiondata})
   
 })
 
@@ -210,24 +209,27 @@ const status='placed'
 const orderId=req.session.orderId
 const response= await updateOrderStatus(orderId,status)
 res.json({status:response})
-
-  
-  
    }else{
     console.log("not Verified");
-    
    }
   }
   else{
-
 res.status(400).json({ status: 'failed', message: 'Payment verification failed.' });
   }
- 
-
-  
 });
 
+router.get('/paymentFailed',verifylogin,(req,res)=>{
+  res.render("layout/paymentFailed")
+})
 
+router.post("/cancelOrder",verifylogin,(req,res)=>{
+  const orderId=req.body.orderId
+  cancelOrder(orderId).then((response)=>{
+    res.json({status:response})
+  })
+  
+  console.log("id::::",req.body)
+})
 
 
 module.exports = router;

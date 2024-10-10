@@ -80,7 +80,6 @@
         e.preventDefault();
 
         let isConfirm = confirm("Do you need to Place Order?");
-        console.log("api called ajax")
         if (isConfirm) {
             $.ajax({
                 type: frm.attr('method'),
@@ -88,11 +87,8 @@
                 data: frm.serialize(),
 
                 success: function (result) {
-                    console.log("api called ajax success")
                     console.log("result.order:::", result.status)
                     if (result.status === true) {
-                        console.log('Submission was successful.');
-
                         // Hide the form after successful submission
                         frm.hide();
                         var successMessage = '<p>Order placed successfully!</p>';
@@ -105,8 +101,6 @@
 
                         // Show the success container and add animation class
                         $('#order-success-container').show().addClass('fadeIn');
-
-                        // Add a click event to the button to navigate to My Orders
                         $('#myOrdersBtn').click(function () {
                             window.location.href = '/myOrders';  // Change to your actual My Orders route
                         });
@@ -125,12 +119,9 @@
         }
     });
     function Payment(order) {
-        console.log("api called inside order")
+        
         const orderData = order.status;
-    console.log("Amount in Rupees:", orderData.amount);
-        const rateString = orderData.amount
-        let rate = Math.round(+rateString * 100);
-        console.log("rate", rate)
+        const rate = orderData.amount
         // Prepare Razorpay options
         const options = {
             key: 'rzp_test_sNKny4TYn0ZBL4',
@@ -165,6 +156,7 @@
             },
             modal: {
                 ondismiss: function () {
+                    window.location.href='/paymentFailed'
                     console.log('Checkout form closed');
                 }
             }
@@ -182,6 +174,3 @@
 
 
 <div id="order-success-container"> </div>
-
-
-// add date and time, alert setting

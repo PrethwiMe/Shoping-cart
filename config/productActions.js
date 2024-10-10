@@ -1,7 +1,7 @@
 var express = require("express")
 var { getDb } = require('./dbconnect')
 const path = require('path');
-const { log, count } = require("console");
+const { log, count, error, time } = require("console");
 const { ObjectId } = require("mongodb");
 const { stringify } = require("querystring");
 const { pipeline } = require("stream");
@@ -322,7 +322,9 @@ async function getCart(userId) {
 
 async function placeOrder(cartForOrder,userDetails,amt) {
    
-    
+    const now = new Date();
+const formattedDate = now.toLocaleString(); // Local date and time
+console.log(formattedDate);
     const status=userDetails.paymentMethod==='cod-placed'?'Cod-Placed':'pending'
     
     const orderObj={
@@ -334,7 +336,8 @@ async function placeOrder(cartForOrder,userDetails,amt) {
     city:userDetails.city,
     postalCode:userDetails.postalCode,
     status:status,
-    totalamount:amt
+    totalamount:amt,
+    time:formattedDate
 }
     const db=getDb();
     const orderCollection=await db.collection('Order').insertOne(orderObj)
@@ -371,6 +374,7 @@ async function viewMyOrders(userId) {
             postalCode: 1,                // Include postal code
             status: 1,                    // Include order status
             totalamount: 1,               // Include total amount
+            time:1,
             'OrderDetails.product': 1,    // Include product name from 'allProducts'
             'OrderDetails.category': 1,   // Include product category from 'allProducts'
             'OrderDetails.Price': 1,      // Include product price from 'allProducts'
@@ -388,6 +392,7 @@ async function viewMyOrders(userId) {
             postalCode: { $first: '$postalCode' },
             status: { $first: '$status' },
             totalamount: { $first: '$totalamount' },
+            time:{$first:'$time'},
             products: { $push: {
                 product: '$OrderDetails.product',
                 category: '$OrderDetails.category',
@@ -407,7 +412,7 @@ async function viewMyOrders(userId) {
 async function payOnlineApi(orderId,amt,userDetails){
     return new Promise((resolve,reject)=>{
         var options = {
-            amount: amt,  // amount in the smallest currency unit
+            amount: amt*100,  // amount in the smallest currency unit
             currency: "INR",
             receipt: orderId
           };
@@ -440,8 +445,18 @@ async function payOnlineApi(orderId,amt,userDetails){
     }
   });
 }
+async function cancelOrder(orderId) {
+    return new Promise(async(resolve,reject)=>{
+        const db=await getDb();
+        const collection=await db.collection("Order").deleteOne({_id: new ObjectId(orderId)})
+        resolve(collection)
+    })
+    
+
+    
+}
 
 
 
 module.exports = { dataInsert, viewProducts, deleteProduct, viewOneProduct, updateProduct, addToCart, viewCart,
-     countItems, changeQuantity, removeProductFromCart, total,getCart,placeOrder,viewMyOrders,payOnlineApi,updateOrderStatus}
+     countItems, changeQuantity, removeProductFromCart, total,getCart,placeOrder,viewMyOrders,payOnlineApi,updateOrderStatus,cancelOrder}

@@ -13,9 +13,11 @@
 
       <div class="collapse navbar-collapse" id="mynavbar">
         <ul class="navbar-nav me-auto">
+          {{#if sessiondata}}
           <li class="nav-item">
             <a class="nav-lin" href="/myOrders">My Orders</a>
           </li>
+          {{/if}}
           <li class="nav-item">
             <a class="nav-lin" href="javascript:void(0)">Services</a>
           </li>
