@@ -17,8 +17,9 @@
     <div class="order-card">
         <div class="row">
             <div class="col-md-6 order-header">Order Id:{{this._id}}</div>
-            <div class="col-md-6 text-md-right order-status">Status: <span class="badge badge-success">{{this.status}}</span></div>
+            <div class="col-md-6 text-md-right order-status">payment Status: <span class="badge badge-success">{{this.paymentStatus}}</span></div>
         </div>
+        <div class="col-md-6 text-md-right order-status">Delivery Status: <span class="badge badge-success">{{this.deliveryStatus}}</span></div>
        <div class="col-md-6"><p>Time:  {{this.time}}</p></div>
         <!-- Order Items -->
          {{#each this.products}}

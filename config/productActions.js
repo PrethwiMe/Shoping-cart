@@ -7,6 +7,7 @@ const { stringify } = require("querystring");
 const { pipeline } = require("stream");
 const Razorpay = require("razorpay");
 const { rejects } = require("assert");
+
 const productCollection = "allProducts"
 const cart = "cart"
 
@@ -30,6 +31,7 @@ async function dataInsert(data) {
 
 async function viewProducts() {
     try {
+        
         const db = getDb();
         const collection = db.collection("allProducts");
         const docs = await collection.find({}).toArray();
@@ -335,7 +337,8 @@ console.log(formattedDate);
     address:userDetails.address,
     city:userDetails.city,
     postalCode:userDetails.postalCode,
-    status:status,
+    paymentStatus:status,
+    deliveryStatus:'pending',
     totalamount:amt,
     time:formattedDate
 }
@@ -372,7 +375,8 @@ async function viewMyOrders(userId) {
             address: 1,                   // Include address
             city: 1,                      // Include city
             postalCode: 1,                // Include postal code
-            status: 1,                    // Include order status
+            paymentStatus: 1,                    // Include order status
+            deliveryStatus:1,
             totalamount: 1,               // Include total amount
             time:1,
             'OrderDetails.product': 1,    // Include product name from 'allProducts'
@@ -390,7 +394,8 @@ async function viewMyOrders(userId) {
             address: { $first: '$address' },
             city: { $first: '$city' },
             postalCode: { $first: '$postalCode' },
-            status: { $first: '$status' },
+            paymentStatus: { $first: '$paymentStatus' },
+            deliveryStatus:{$first:'$deliveryStatus'},
             totalamount: { $first: '$totalamount' },
             time:{$first:'$time'},
             products: { $push: {
@@ -436,7 +441,7 @@ async function payOnlineApi(orderId,amt,userDetails){
       const db = await getDb();
       const orderCollection = await db.collection("Order").updateOne(
         { _id: new ObjectId(orderId) }, // You can add more conditions if needed
-        { $set: { status: status } }
+        { $set: { paymentStatus: status } }
       );
       
       resolve(orderCollection);
@@ -455,8 +460,97 @@ async function cancelOrder(orderId) {
 
     
 }
+///////////////////////// admin 
+async function orderData() {
+    const db = await getDb();
+
+    const pipeline = [
+        {
+            $match: { paymentStatus: { $in: ['placed', 'Cod-Placed'] }} 
+        },
+        { $unwind: '$products' },         // Unwind the 'products' array to access each product in the order
+        {
+            $lookup: {
+                from: 'allProducts',       // Lookup from the 'allProducts' collection
+                localField: 'products.item', // Match on the 'products.item' field (ObjectId of the product)
+                foreignField: '_id',       // Join with the '_id' field in 'allProducts'
+                as: 'OrderDetails'         // Alias for the joined product details
+            }
+        },
+        { $unwind: '$OrderDetails' },     // Unwind the 'OrderDetails' array to get individual product details
+        {
+            $project: {
+                _id: 1,                   // Include order ID
+                fullName: 1,              // Include customer name
+                phone: 1,                 // Include phone number
+                address: 1,               // Include address
+                city: 1,                  // Include city
+                postalCode: 1,            // Include postal code
+                paymentStatus: 1,                // Include order status
+                deliveryStatus:1,
+                totalamount: 1,           // Include total amount
+                time: 1,                  // Include order time
+                'OrderDetails.product': 1, // Include product name from 'allProducts'
+                'OrderDetails.category': 1, // Include product category from 'allProducts'
+                'OrderDetails.Price': 1,   // Include product price from 'allProducts'
+                'OrderDetails.image': 1,   // Include product image from 'allProducts'
+                'products.quantity': 1      // Include product quantity from 'Order'
+            }
+        },
+        {
+            $group: {
+                _id: '$_id',              // Group by order ID
+                fullName: { $first: '$fullName' },
+                phone: { $first: '$phone' },
+                address: { $first: '$address' },
+                city: { $first: '$city' },
+                postalCode: { $first: '$postalCode' },
+                paymentStatus: { $first: '$paymentStatus' },
+                deliveryStatus:{$first:'$deliveryStatus'},
+                totalamount: { $first: '$totalamount' },
+                time: { $first: '$time' },
+                products: { $push: {
+                    product: '$OrderDetails.product',
+                    category: '$OrderDetails.category',
+                    price: '$OrderDetails.Price',
+                    image: '$OrderDetails.image',
+                    quantity: '$products.quantity'
+                }} // Collect all products in an array
+            }
+        }
+    ];
+
+    const orders = await db.collection('Order').aggregate(pipeline).toArray(); 
+    return orders; 
 
 
+}
+
+
+async function updateDelivery(orderId,status) {
+console.log('datas',orderId,status)
+    const filter={_id:new ObjectId(orderId)}
+    const updateDocument={
+        $set:{ deliveryStatus:status}
+    }
+    const db=await getDb();
+    const sts=await db.collection('Order').updateOne(filter,updateDocument)
+    return sts
+}
+
+async function loginAdmin(user,password) {
+    const db=await getDb();
+    const login=await db.collection("admin").findOne({admin:user})
+    if (login) {
+        if (login.password===password) {
+            return true;   
+        }else{
+            return "password error"
+        }   
+    }else{
+        return "admin Not Found"
+    }}
 
 module.exports = { dataInsert, viewProducts, deleteProduct, viewOneProduct, updateProduct, addToCart, viewCart,
-     countItems, changeQuantity, removeProductFromCart, total,getCart,placeOrder,viewMyOrders,payOnlineApi,updateOrderStatus,cancelOrder}
+     countItems, changeQuantity, removeProductFromCart, total,getCart,placeOrder,viewMyOrders,payOnlineApi,updateOrderStatus,cancelOrder,
+     orderData,updateDelivery,loginAdmin}

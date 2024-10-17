@@ -24,7 +24,7 @@
           {{#if sessiondata}}
           <li class="nav-item">
             <a class="nav-lin" href="/cart">Cart
-             <span class="badge bg-secondary">{{numberOfItems}}</span>
+              <span class="badge bg-secondary">{{numberOfItems}}</span>
             </a>
           </li>
           {{/if}}
@@ -35,31 +35,32 @@
         </form>
         <!-- Dropdown button -->
         <div class="dropdown ms-3">
-<button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-    {{#if sessiondata}}
-        {{sessiondata.name}}
-    {{else}}
-        Sign In/Up
-    {{/if}}
-</button>
-<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    {{#if sessiondata}}
-        
-        <li><a class="dropdown-item" href="/logout">Logout</a></li>
-        
-    {{else}}
-        
-        <li><a class="dropdown-item" href="/signup">Sign Up</a></li>
-        <li><a class="dropdown-item" href="/login">Sign In</a></li>
-    {{/if}}
-</ul>
+          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            {{#if sessiondata}}
+            {{sessiondata.name}}
+            {{else}}
+            Sign In/Up
+            {{/if}}
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {{#if sessiondata}}
+
+            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+
+            {{else}}
+
+            <li><a class="dropdown-item" href="/signup">Sign Up</a></li>
+            <li><a class="dropdown-item" href="/login">Sign In</a></li>
+            {{/if}}
+          </ul>
         </div>
       </div>
     </div>
   </nav>
 </header>
 <script>
-  window.addEventListener('pageshow', function(event) {
+  window.addEventListener('pageshow', function (event) {
     if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
       window.location.reload(); // Force reload the page
     }

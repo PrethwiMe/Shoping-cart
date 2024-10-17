@@ -1,0 +1,115 @@
+<header>
+    <header>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+  <header>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <span class="highlight">P</span>-cart-Admin
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar" aria-controls="mynavbar" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+          <!-- Dropdown button -->
+          <div class="dropdown ms-3">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+              Sign In/Up
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li><a class="dropdown-item" href="/signup" >sign Up</a></li>
+              <li><a class="dropdown-item" href="/login">Sign In</a></li>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+</header>
+</header>
+
+<section>
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="w-100" style="max-width: 400px;">
+            <div class="card shadow border-0 rounded">
+                <div class="card-body p-4">
+                    <h4 class="card-title text-center mb-4">Login</h4>
+                    <form id="login-form" action="admin/adminLogin" method="post">
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                        </div>
+                        {{#if loginError}}
+                        <p class="class text-danger">{{this.loginError}}</p>
+                        {{/if}}
+                        <button type="submit" class="btn btn-primary w-100 py-2">Login</button>
+                        <div class="text-center mt-3">
+                            <p class="text-muted mb-0">Don't have an account? <a href="/signup" class="link-primary">Sign Up</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+    .card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .card-title {
+        color: #212529;
+        font-weight: 600;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 500;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        opacity: 0.8;
+        transform: translateY(-2px);
+    }
+    .form-control {
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+        padding: 12px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: none;
+    }
+    .link-primary {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .link-primary:hover {
+        text-decoration: underline;
+    }
+    .text-muted {
+        color: #6c757d;
+    }
+</style>

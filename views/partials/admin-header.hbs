@@ -1,32 +1,36 @@
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/admin/allProducts">Admin</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mynavbar">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/add-products">add product</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/admin//orderData">Order Data</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0)">
+          </a>
+        </li>
+      </ul>
 
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/admin">Admin</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="mynavbar">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="javascript:void(0)">product</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="javascript:void(0)">services</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="javascript:void(0)">cart
-                
+    </div>
+    <div class="dropdown ms-3">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+            data-bs-toggle="dropdown" aria-expanded="false">
+           login/logout
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
-              </a>
-            </li>
+            <li><a class="dropdown-item" href="/admin/logout">Logout</a></li>
+            <li><a class="dropdown-item" href="/admin">login</a></li>
+            
           </ul>
-          <form class="d-flex">
-            <input class="form-control me-2" type="text" placeholder="Search">
-            <button class="btn btn-primary" type="button">Search</button>
-          </form>
         </div>
-      </div>
-    </nav>
-  </header>
-
-  
+  </div>
+</nav>
+</header>

@@ -102,7 +102,7 @@ router.post("/login",async (req,res)=>{
 })
 //logout session destroyed
 router.get('/logout',(req,res)=>{
-  req.session.destroy();
+  req.session=null;
   res.redirect('/')
 })
 //view cart

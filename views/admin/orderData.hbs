@@ -1,0 +1,51 @@
+{{>admin-header}}
+
+<section>
+  <h1>Order Management</h1>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Customer</th>
+        <th>Products</th>
+        <th>Total Amount</th>
+        <th>Order Date</th>
+        <th>Payment Status</th>
+        <th>delivery Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each order}}
+      <tr>
+        <td>{{this._id}}</td> 
+        <td>{{this.fullName}}</td>
+        <td>
+          <ul>
+            {{#each this.products}}
+              <li>{{this.product}} - {{this.quantity}}</li>
+            {{/each}}
+          </ul>
+        </td>
+
+        <td>₹ {{this.totalamount}}</td>
+        <td>{{this.time}}</td> 
+        <td>{{this.paymentStatus}}</td> 
+        <td>{{this.deliveryStatus}}</td> 
+        <td>
+          <form action="/admin/updateOrderStatus" method="POST">
+            <input type="hidden" name="orderId" value="{{this._id}}"> 
+            <select name="deliveryStatus" class="form-select">
+              <option value="">select</option>
+              <option value="Shipped">Shipped</option>
+              <option value="Canceled">Canceled</option>
+              <option value="closed">closed</option>
+            </select>
+            <button type="submit" class="btn btn-primary mt-2">Update</button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</section>
