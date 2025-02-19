@@ -1,7 +1,7 @@
 var { MongoClient } = require('mongodb')
 const express = require("express")
 
-const url = 'mongodb+srv://prethwicoc:<db_password>@cluster0.hreof.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const url = 'mongodb+srv://prethwicoc:aRAGL0wNX0I4Es16@cluster0.hreof.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 const dbname = 'sample';
 let db;
 
