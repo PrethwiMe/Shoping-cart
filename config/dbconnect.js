@@ -1,30 +1,22 @@
-var { MongoClient } = require('mongodb')
-const express = require("express")
+const mongoose = require("mongoose");
 
-const url = 'mongodb+srv://prethwicoc:aRAGL0wNX0I4Es16@cluster0.hreof.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&tls=true';
-const dbname = 'sample';
-let db;
+const url = 'mongodb+srv://prethwicoc:aRAGL0wNX0I4Es16@cluster0.hreof.mongodb.net/sample?retryWrites=true&w=majority&appName=Cluster0&tls=true';
 
-const client = new MongoClient(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+let db = null; // Store the database reference
 
 async function connectDB() {
-
     try {
-        await client.connect();
-        console.log("connected to Database");
+        await mongoose.connect(url, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+        console.log("✅ Connected to MongoDB using Mongoose");
 
-        db = client.db(dbname);
-
+        db = mongoose.connection; // Assign the database connection
 
     } catch (error) {
-        console.log("connection failed");
-
-        console.log("error" + error);
-
-
+        console.error("❌ MongoDB Connection Failed:", error);
+        process.exit(1); // Exit process if DB connection fails
     }
 }
 
