@@ -1,7 +1,7 @@
 var { MongoClient } = require('mongodb')
 const express = require("express")
 
-const url = 'mongodb://localhost:27017';
+const url = 'mongodb+srv://prethwicoc:<db_password>@cluster0.hreof.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 const dbname = 'sample';
 let db;
 
